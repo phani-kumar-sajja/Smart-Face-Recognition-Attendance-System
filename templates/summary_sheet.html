@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Summary Sheet</title>
+    <style>
+        body { padding: 20px; background: #f8f8f8; font-family: sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 10px 15px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #3c8dbc; color: white; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h2>📊 Per-Student Subject Summary (in Hours)</h2>
+
+    <div style="display: flex; justify-content: center;">
+    <form method="POST" style="display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin-bottom: 20px;">
+        <label>Filter by Subject:</label>
+        <select name="subject">
+            <option value="">All</option>
+            {% for sub in subjects %}
+            <option value="{{ sub }}" {% if sub == selected_subject %}selected{% endif %}>{{ sub }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Filter by Student ID:</label>
+        <select name="student_id">
+            <option value="">All</option>
+            {% for sid in ids %}
+            <option value="{{ sid }}" {% if sid == selected_id %}selected{% endif %}>{{ sid }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" style="background-color:#3c8dbc; color:white; border:none; padding:10px; border-radius:5px;">🔎 Filter</button>
+    </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Subject</th>
+                <th>Total Sessions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sid, subject, count in summary %}
+            <tr>
+                <td>{{ sid }}</td>
+                <td>{{ subject }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Enroll & Attendance</title>
+    <link rel="stylesheet" href="/static/home.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+</head>
+
+    <body>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div style="text-align: bottom; margin: 20px;">
+                {% for category, message in messages %}
+                <p style="color: '{% if category == 'error' %}red{% elif category == 'success' %}green{% else %}black{% endif %}'; font-weight: bold;">
+                    {{ message }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        <header class="header">
+            <div class="user-dropdown">
+                <i class='bx bxs-user-circle' id="user-icon"></i>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <a href="{{ url_for('summary_sheet') }}">Summary Sheet</a>
+                    <a href="{{ url_for('export_sheet') }}">Export Sheet</a>
+                    <a href="{{ url_for('view_sheet') }}">View Attendance</a>
+                    <a href="{{ url_for('query_solver') }}">Query Solver</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
+            <a href="{{ url_for('home') }}"><h1>Attendance System</h1></a>
+            <nav>
+                <a href="{{ url_for('sync_attendance') }}">📡 Sync Attendance</a>
+            </nav>
+        </header>
+
+        <div class="container">
+            <div class="form-box login">
+                <form action="{{ url_for('attendance_live') }}" method="POST" enctype="multipart/form-data">
+                    <h1>Attendance</h1>
+                    <div class="input-box">
+                        <input type="text" name="subject" placeholder="Subject Name (e.g., AI, CN)" required>
+                        <i class='bx bxs-book'></i>
+                    </div>
+
+                    <button type="submit" class="btn">📷 Start Live Attendance</button>
+                </form>
+            </div>
+
+            <div class="form-box register">
+                <form action="{{ url_for('enroll_live') }}" method="POST" enctype="multipart/form-data">
+                    <h1 class = "enroll">Enroll</h1>
+                    <div class="input-box">
+                        <input type="text" name="Student_ID" placeholder="Student ID (e.g., S201025)" required>
+                        <i class='bx bxs-user-check'></i> 
+                    </div>
+                    <div class="input-box">
+                        <input type="text" name="Student_Name" placeholder="Student Name" required>
+                        <i class='bx bxs-user'></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" name="class" placeholder="Class (e.g., 3A or 4A ...)" required>
+                        <i class='bx bxs-book' ></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" name="branch" placeholder="Branch (e.g., CSE or ECE ...)" required>
+                        <i class='bx bxs-book-content' ></i>
+                    </div>
+                    <div class="input-box">
+                        <button type="submit" class="btn">📷 Open Webcam & Enroll</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="toggle-box">
+                <div class="toggle-panel toggle-left">
+                    <h1>New Student ?</h1>
+                    <p>Enroll here</p>
+                    <button class="btn register-btn">Enroll</button>
+                </div>
+
+                <div class="toggle-panel toggle-right">
+                    <h1>Attendance!</h1>
+                    <p>Mark attendance here</p>
+                    <button class="btn login-btn">Attendance</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer">
+        <div class="bubbles">
+            {% for i in range(64) %}  <!-- reduced from 128 for performance -->
+            <div class="bubble" style="
+            --size:{{ 2 + (loop.index0 % 4) }}rem;
+            --distance:{{ 6 + (loop.index0 % 4) }}rem;
+            --position:{{ (-5 + loop.index0 * 2) % 100 }}%;
+            --time:{{ 2 + (loop.index0 % 2) }}s;
+            --delay:-{{ 1 + (loop.index0 % 3) }}s;">
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="content">
+            <div>
+            <p>&copy; 2025 Smart Attendance System. All rights reserved.</p>
+            <p>
+                Built with ❤️ using Flask, YOLOv8, and face recognition.<br><br>
+                <a href="mailto:rs201025@rguktsklm.ac.in">Contact Support</a>
+            </p>
+            </div>
+            <div>
+            <a class="image" href="https://codepen.io/z-" target="_blank"
+                style="background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/199011/happy.svg')">
+            </a>
+            </div>
+        </div>
+        </div>
+
+        <!-- SVG Filter for Gooey Bubbles -->
+        <svg style="position: fixed; top: 100vh">
+        <defs>
+            <filter id="blob">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"></feGaussianBlur>
+            <feColorMatrix in="blur" mode="matrix"
+                values="1 0 0 0 0  
+                        0 1 0 0 0  
+                        0 0 1 0 0  
+                        0 0 0 19 -9" result="blob"></feColorMatrix>
+            </filter>
+        </defs>
+        </svg>
+
+        <div id="loading-overlay" style="
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        ">
+            <div class="loader"></div>
+        </div>
+
+        <style>
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3c8dbc;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        </style>
+
+        <script>
+            document.querySelectorAll("form").forEach(form => {
+                form.addEventListener("submit", () => {
+                    document.getElementById("loading-overlay").style.display = "flex";
+                });
+            });
+        </script>
+
+
+        <script src="/static/home.js"></script>
+    </body>
+</html>

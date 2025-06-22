@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Sheet</title>
+    <link rel="stylesheet" href="#">
+    <style>
+        body { padding: 20px; background: #f9f9f9; font-family: sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 10px 15px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #3c8dbc; color: white; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+<h2>📋 Attendance Summary</h2>
+<div style="display: flex; justify-content: center;">
+
+<form method="POST" style="display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin-bottom: 20px;">
+    <label>Filter by Subject:</label>
+    <select name="subject">
+        <option value="">All</option>
+        {% for sub in subjects %}
+        <option value="{{ sub }}" {% if sub == selected_subject %}selected{% endif %}>{{ sub }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Filter by Date:</label>
+    <select name="date">
+        <option value="">All</option>
+        {% for d in dates %}
+        <option value="{{ d }}" {% if d == selected_date %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" style="background-color:#3c8dbc; color:white; border:none; padding:10px; border-radius:5px;">🔎 Filter</button>
+    <button type="submit" formaction="{{ url_for('export_sheet') }}" style="background-color:#3c8dbc; color:white; border:none; padding:10px; border-radius:5px;">📤 Export CSV</button>
+</form>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Subject</th>
+            <th>Timestamp</th>
+            <th>Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in records %}
+        <tr>
+            <td>{{ row.sid }}</td>
+            <td>{{ row.subject }}</td>
+            <td>{{ row.timestamp }}</td>
+            <td>{{ row.class }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

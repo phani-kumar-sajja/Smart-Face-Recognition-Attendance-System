@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Export Subject Tables</title>
+    <script>
+        function updateSubjects() {
+            const selectedClass = document.getElementById('class').value;
+            const subjectSelect = document.getElementById('subject');
+            const subjectOptions = JSON.parse('{{ class_subject_map | tojson }}');
+
+            subjectSelect.innerHTML = '';
+            if (subjectOptions[selectedClass]) {
+                subjectOptions[selectedClass].forEach(sub => {
+                    let opt = document.createElement("option");
+                    opt.value = sub;
+                    opt.innerText = sub;
+                    subjectSelect.appendChild(opt);
+                });
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/home.css">
+</head>
+<body style="padding: 30px; font-family: sans-serif;">
+
+    <h2>📤 Export Subject Attendance Table</h2>
+
+    <form method="POST" action="{{ url_for('export_sheet') }}" style="max-width: 400px;">
+        <label>Select Class:</label>
+        <select name="class" id="class" onchange="updateSubjects()" required>
+            <option value="">-- Select Class --</option>
+            {% for cls in class_subject_map.keys()|sort %}
+            <option value="{{ cls }}">{{ cls }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+        <label>Select Subject:</label>
+        <select name="subject" id="subject" required>
+            <option value="">-- Select Subject --</option>
+        </select>
+
+        <br><br>
+        <button type="submit" style="padding: 10px 20px; background-color: #3c8dbc; color: white; border: none; border-radius: 5px;">
+            Export CSV
+        </button>
+    </form>
+</body>
+</html>
